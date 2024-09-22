@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
+import '../pages/detail_screen.dart';
+import 'package:find_the_recipe/model/recipes/recipe.dart';
 
 class RecipeCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final String time;
-  final String calories;
+  final Recipe recipe;
 
   const RecipeCard({
     super.key,
-    required this.image,
-    required this.title,
-    required this.time,
-    required this.calories,
+    required this.recipe,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) {
-        //   return DetailScreen(place: place);
-        // }));
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return DetailScreen(recipe: recipe);
+        }));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -47,7 +43,7 @@ class RecipeCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      image,
+                      recipe.image,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -56,7 +52,7 @@ class RecipeCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    title,
+                    recipe.title,
                     style: const TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,
@@ -75,7 +71,7 @@ class RecipeCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        time,
+                        recipe.lengthOfTime,
                         style:
                             const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
@@ -87,7 +83,7 @@ class RecipeCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        calories,
+                        recipe.calories,
                         style:
                             const TextStyle(fontSize: 12, color: Colors.grey),
                       ),

@@ -1,4 +1,4 @@
-import 'package:find_the_recipe/components/organisms/recipe_card.dart';
+import 'package:find_the_recipe/components/molecules/recipe_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -154,18 +154,15 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    height: 200, // Set a fixed height for the GridView
                     child: GridView.count(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
+                      shrinkWrap: true, // Make the GridView fit its content
+                      physics:
+                          const NeverScrollableScrollPhysics(), // Disable GridView's own scrolling
                       children: recipeList.take(2).map((recipe) {
-                        return RecipeCard(
-                          image: recipe.image,
-                          title: recipe.title,
-                          time: recipe.lengthOfTime,
-                          calories: recipe.calories,
-                        );
+                        return RecipeCard(recipe: recipe);
                       }).toList(),
                     ),
                   ),
