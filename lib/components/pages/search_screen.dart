@@ -1,9 +1,10 @@
 import 'package:find_the_recipe/components/molecules/recipe_card.dart';
-import 'package:find_the_recipe/components/organisms/app_bar.dart';
-import 'package:find_the_recipe/components/organisms/bottom_navigation_bar.dart';
+import 'package:find_the_recipe/components/organisms/recipe_grid.dart';
+import '../organisms/bottom_navigation_bar.dart';
 import 'package:find_the_recipe/components/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:find_the_recipe/model/recipes/recipe.dart';
+import '../atoms/category_button.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,6 +16,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Recipe> _filteredRecipes = [];
+  String _selectedCategory = 'All Recipes'; // Default selection
 
   @override
   void initState() {
@@ -29,48 +31,41 @@ class _SearchScreenState extends State<SearchScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Row(
-            // Use Row for horizontal centering
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Center content horizontally
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 600),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _searchController,
-                        decoration: const InputDecoration(
-                          hintText: 'Search recipes...',
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (value) {
-                          _filterRecipes(value);
-                        },
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Search recipes...',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
-                      const SizedBox(height: 24),
-                      _filteredRecipes.isEmpty
-                          ? const Text('No recipes found.')
-                          : _buildPopularRecipes(_filteredRecipes),
-                      const SizedBox(height: 32),
-                    ],
+                    ),
+                    onChanged: (value) {
+                      _filterRecipes(value);
+                    },
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  _buildCategories(),
+                  const SizedBox(height: 24),
+                  _filteredRecipes.isEmpty
+                      ? const Center(child: Text('No recipes found.'))
+                      : RecipesGrid(recipes: _filteredRecipes),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: 1, // Set the currentIndex to 1 for the SearchScreen
         onTap: (index) {
           if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.pop(context); // Pop SearchScreen from the stack
           }
         },
       ),
@@ -78,30 +73,45 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _filterRecipes(String value) {
-    _filteredRecipes = recipeList
-        .where((recipe) =>
-            recipe.title.toLowerCase().contains(value.toLowerCase()))
-        .toList();
-    setState(() {}); // Update UI with filtered recipes
+    setState(() {
+      _filteredRecipes = recipeList
+          .where((recipe) =>
+              recipe.title.toLowerCase().contains(value.toLowerCase()) &&
+              (_selectedCategory == 'All Recipes' ||
+                  recipe.category == _selectedCategory))
+          .toList();
+    });
   }
 
-  Widget _buildPopularRecipes(List<Recipe> recipes) {
-    return Column(
-      children: [
-        Container(
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            shrinkWrap: true, // Make the GridView fit its content
-            physics:
-                const NeverScrollableScrollPhysics(), // Disable GridView's own scrolling
-            children: recipes.map((recipe) {
-              return RecipeCard(recipe: recipe);
+  void _selectCategory(String category) {
+    setState(() {
+      _selectedCategory = category;
+      _filterRecipes(_searchController.text);
+    });
+  }
+
+  Widget _buildCategories() {
+    const categories = ['All Recipes', 'Breakfast', 'Lunch', 'Dinner', 'Snack'];
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: categories.map((category) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: CategoryButton(
+                  text: category,
+                  isActive: _selectedCategory == category,
+                  onTap: () => _selectCategory(category),
+                ),
+              );
             }).toList(),
           ),
         ),
-      ],
+      ),
     );
   }
 }

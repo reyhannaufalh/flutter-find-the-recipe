@@ -18,7 +18,7 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: _buildAppBar(context),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          double imageHeight = constraints.maxWidth > 480 ? 250 : 150;
+          double imageHeight = constraints.maxWidth > 480 ? 250 : 200;
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),

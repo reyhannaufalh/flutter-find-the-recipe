@@ -1,12 +1,11 @@
-import 'package:find_the_recipe/components/molecules/recipe_card.dart';
-import 'package:find_the_recipe/components/organisms/app_bar.dart';
-import 'package:find_the_recipe/components/pages/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../atoms/category_button.dart';
-import 'package:find_the_recipe/model/recipes/recipe.dart';
+
+import '../../model/recipes/recipe.dart';
 import '../organisms/bottom_navigation_bar.dart';
+import '../organisms/app_bar.dart';
+import '../organisms/recipe_grid.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,14 +13,13 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // Transparent status bar
-      statusBarIconBrightness: Brightness.dark, // Dark icons
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
     ));
     return Scaffold(
       appBar: const CustomAppBar(title: 'Reyhan Naufal', actions: [
         Icon(
           Icons.notifications_none_outlined,
-          // onPressed: () {},
         ),
       ]),
       body: Padding(
@@ -32,11 +30,9 @@ class HomeScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildHeroImage(),
+                  _buildHeroImage(recipeList[0]),
                   const SizedBox(height: 24),
-                  _buildCategories(),
-                  const SizedBox(height: 24),
-                  _buildPopularRecipes(),
+                  RecipesGrid(recipes: recipeList),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -46,25 +42,28 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 0,
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SearchScreen()),
-            );
-          }
-        },
+        onTap: (index) {},
       ),
     );
   }
 
-  Widget _buildHeroImage() {
+  Widget _buildHeroImage(Recipe recipe) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        double imageHeight = constraints.maxWidth > 480 ? 320.0 : 240.0;
-        return Container(
-          width: constraints
-              .maxWidth, // Set the width to the max width of the parent
+        double imageHeight, titleSize, categorySize;
+
+        if (constraints.maxWidth > 480) {
+          imageHeight = 300.0;
+          titleSize = 32.0;
+          categorySize = 20.0;
+        } else {
+          imageHeight = 240.0;
+          titleSize = 24.0;
+          categorySize = 14.0;
+        }
+
+        return SizedBox(
+          width: constraints.maxWidth,
           child: Stack(
             children: [
               ClipRRect(
@@ -75,28 +74,52 @@ class HomeScreen extends StatelessWidget {
                   height: imageHeight,
                 ),
               ),
-              const Positioned(
-                bottom: 16,
-                left: 16,
+              Positioned(
+                top: 24,
+                left: 24,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: const Text(
+                    'Featured Recipe',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 24,
+                left: 24,
                 right: 16,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Breakfast',
+                      recipe.category,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: categorySize,
                         color: Colors.white,
                       ),
                     ),
                     Text(
-                      'Asian white noodle with extra seafood',
+                      recipe.title,
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: titleSize,
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Poppins',
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ],
                 ),
@@ -105,78 +128,6 @@ class HomeScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildCategories() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 600),
-      child: const Align(
-        alignment: Alignment.topLeft,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Categories',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  CategoryButton(text: 'Breakfast'),
-                  SizedBox(width: 8),
-                  CategoryButton(text: 'Lunch'),
-                  SizedBox(width: 8),
-                  CategoryButton(text: 'Dinner'),
-                  SizedBox(width: 8),
-                  CategoryButton(text: 'Snack'),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPopularRecipes() {
-    return Column(
-      children: [
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Popular',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            // TextButton(
-            //   child: Text('See all'),
-            // ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            shrinkWrap: true, // Make the GridView fit its content
-            physics:
-                const NeverScrollableScrollPhysics(), // Disable GridView's own scrolling
-            children: recipeList.take(2).map((recipe) {
-              return RecipeCard(recipe: recipe);
-            }).toList(),
-          ),
-        ),
-      ],
     );
   }
 }
