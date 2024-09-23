@@ -8,7 +8,7 @@ class CategoryButton extends StatelessWidget {
   const CategoryButton({
     super.key,
     required this.text,
-    this.isActive = false, // Default value is false
+    this.isActive = false,
     required this.onTap,
   });
 

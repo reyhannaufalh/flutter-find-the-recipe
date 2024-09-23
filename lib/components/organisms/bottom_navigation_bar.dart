@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../pages/search_screen.dart'; // Import the SearchScreen
+import '../pages/search_screen.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final ValueChanged<int> onTap;

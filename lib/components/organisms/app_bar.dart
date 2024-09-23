@@ -37,8 +37,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
               actions: actions,
-              backgroundColor: Colors.transparent, // Make AppBar transparent
-              elevation: 0, // Remove shadow
+              backgroundColor: Colors.transparent,
+              elevation: 0,
             ),
           ),
         ),

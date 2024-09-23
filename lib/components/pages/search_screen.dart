@@ -16,13 +16,12 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Recipe> _filteredRecipes = [];
-  String _selectedCategory = 'All Recipes'; // Default selection
+  String _selectedCategory = 'All Recipes';
 
   @override
   void initState() {
     super.initState();
-    _filteredRecipes =
-        recipeList; // Initialize filteredRecipes with all recipes
+    _filteredRecipes = recipeList;
   }
 
   @override
@@ -31,41 +30,44 @@ class _SearchScreenState extends State<SearchScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
+          child: Align(
+            alignment: Alignment.topCenter,
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search recipes...',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search recipes...',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
                       ),
+                      onChanged: (value) {
+                        _filterRecipes(value);
+                      },
                     ),
-                    onChanged: (value) {
-                      _filterRecipes(value);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  _buildCategories(),
-                  const SizedBox(height: 24),
-                  _filteredRecipes.isEmpty
-                      ? const Center(child: Text('No recipes found.'))
-                      : RecipesGrid(recipes: _filteredRecipes),
-                ],
+                    const SizedBox(height: 12),
+                    _buildCategories(),
+                    const SizedBox(height: 24),
+                    _filteredRecipes.isEmpty
+                        ? const Center(child: Text('No recipes found.'))
+                        : RecipesGrid(recipes: _filteredRecipes),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 1, // Set the currentIndex to 1 for the SearchScreen
+        currentIndex: 1,
         onTap: (index) {
           if (index == 0) {
-            Navigator.pop(context); // Pop SearchScreen from the stack
+            Navigator.pop(context);
           }
         },
       ),

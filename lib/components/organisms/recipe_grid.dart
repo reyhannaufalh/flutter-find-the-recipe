@@ -15,7 +15,7 @@ class RecipesGrid extends StatelessWidget {
         int crossAxisCount;
         if (constraints.maxWidth > 480) {
           crossAxisCount = 3;
-        } else if (constraints.maxWidth < 360) {
+        } else if (constraints.maxWidth < 320) {
           crossAxisCount = 1;
         } else {
           crossAxisCount = 2;
@@ -27,9 +27,8 @@ class RecipesGrid extends StatelessWidget {
           crossAxisCount: crossAxisCount,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          shrinkWrap: true, // Make the GridView fit its content
-          physics:
-              const NeverScrollableScrollPhysics(), // Disable GridView's own scrolling
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           children: displayedRecipes.map((recipe) {
             return RecipeCard(recipe: recipe);
           }).toList(),

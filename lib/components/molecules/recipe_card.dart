@@ -27,15 +27,15 @@ class RecipeCard extends StatelessWidget {
               color: Colors.grey.withOpacity(0.3),
               spreadRadius: 2,
               blurRadius: 5,
-              offset: const Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3),
             ),
           ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Card(
-            color: Colors.transparent, // Make the Card background transparent
-            elevation: 0, // Remove Card's default shadow
+            color: Colors.transparent,
+            elevation: 0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
